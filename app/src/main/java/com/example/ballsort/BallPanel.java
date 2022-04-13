@@ -5,6 +5,6 @@ public class BallPanel {
     String adada = "boing";
 
     void methodtest() {
-        // im working on this rn
+        // im working on this rnf
     }
 }
