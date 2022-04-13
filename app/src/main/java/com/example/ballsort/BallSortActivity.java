@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.util.Log;
+import android.view.Window;
 
 import androidx.annotation.Nullable;
 
@@ -15,11 +16,9 @@ public class BallSortActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         Log.i(MYDEBUG, "Got here! (BallSortActivity - onCreate)");
 
-        setContentView(R.layout.setup);
+        setContentView(R.layout.main);
     }
-
-    int s = 34;
 }
