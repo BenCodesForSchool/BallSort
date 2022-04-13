@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">BallSort</string>
+    <string name="setuptitletext">Ball Sort!</string>
+    <string name="paramlabelBallTypeText">Gesture type</string>
+    <string name="nolaps">Number of blocks</string>
+    <string name="button01text">OK</string>
+    <string name="button03text">Exit</string>
+</resources>
