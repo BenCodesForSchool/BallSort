@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 public class BallSortActivity extends Activity {
 
     final static String MYDEBUG = "MYDEBUG"; // for Log.i messages
+    int n = 567890;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
