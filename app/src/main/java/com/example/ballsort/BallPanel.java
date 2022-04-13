@@ -8,4 +8,5 @@ public class BallPanel {
 
 
     int y = 4434;
+    String fart = "";
 }
