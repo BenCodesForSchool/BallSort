@@ -10,5 +10,6 @@ public class BallPanel {
     }
 
     int y = 4434;
-    String fart = "";
+ int t = 43;
+ float j;
 }
