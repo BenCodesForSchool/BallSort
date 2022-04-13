@@ -20,17 +20,18 @@ public class BallSortSetup extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.setup);
 
+        setContentView(R.layout.setup);
 
         spinNumTrials = (Spinner) findViewById(R.id.paramNoLaps);
         ArrayAdapter<CharSequence> adapter5 = new ArrayAdapter<CharSequence>(this, R.layout.spinnerstyle, NUM_OF_TRIALS);
         spinNumTrials.setAdapter(adapter5);
-        spinNumTrials.setSelection(0);
+        spinNumTrials.setSelection(0);  // default 5
 
         spinGesType = (Spinner) findViewById(R.id.paramBallTypeSpinner);
         ArrayAdapter<CharSequence> adapter2 = new ArrayAdapter<CharSequence>(this, R.layout.spinnerstyle, GESTURE_TYPE);
         spinGesType.setAdapter(adapter2);
+        spinGesType.setSelection(0);    // default Fling
 
     }
 
@@ -39,7 +40,6 @@ public class BallSortSetup extends Activity {
         // get user's choices...
         String numtrials = (String) spinNumTrials.getSelectedItem();
         String gType = (String) spinGesType.getSelectedItem();
-
 
         int noTs;
         if(numtrials.equals("5"))
