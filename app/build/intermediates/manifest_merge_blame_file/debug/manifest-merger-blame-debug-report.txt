@@ -27,9 +27,9 @@
 18-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:10:9-35
 19        android:theme="@style/AppTheme" >
 19-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:11:9-40
-20        <activity android:name="com.example.ballsort.BallSortActivity" >
+20        <activity android:name="com.example.ballsort.BallSortSetup" >
 20-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:12:9-18:20
-20-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:12:19-51
+20-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:12:19-48
 21            <intent-filter>
 21-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:13:13-17:29
 22                <action android:name="android.intent.action.MAIN" />

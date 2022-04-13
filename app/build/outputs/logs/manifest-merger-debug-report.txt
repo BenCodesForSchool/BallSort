@@ -70,10 +70,10 @@ MERGED from [androidx.versionedparcelable:versionedparcelable:1.0.0] C:\Users\Co
 		ADDED from C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:6:9-35
 	android:theme
 		ADDED from C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:11:9-40
-activity#com.example.ballsort.BallSortActivity
+activity#com.example.ballsort.BallSortSetup
 ADDED from C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:12:9-18:20
 	android:name
-		ADDED from C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:12:19-51
+		ADDED from C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:12:19-48
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
 ADDED from C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:13:13-17:29
 action#android.intent.action.MAIN
