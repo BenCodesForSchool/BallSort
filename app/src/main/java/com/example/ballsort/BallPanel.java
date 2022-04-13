@@ -9,4 +9,5 @@ public class BallPanel {
 
     int y = 4434;
  int t = 43;
+ float j;
 }
