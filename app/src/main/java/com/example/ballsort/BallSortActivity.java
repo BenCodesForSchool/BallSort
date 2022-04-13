@@ -20,4 +20,6 @@ public class BallSortActivity extends Activity {
 
         setContentView(R.layout.setup);
     }
+
+    int s = 34;
 }
