@@ -5,7 +5,9 @@ public class BallPanel {
     String adada = "boing";
 
 
-
+    void dsadas() {
+        // test
+    }
 
     int y = 4434;
  int t = 43;
