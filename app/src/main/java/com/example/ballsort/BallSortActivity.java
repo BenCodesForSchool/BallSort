@@ -27,6 +27,7 @@ public class BallSortActivity extends Activity {
         Log.i(MYDEBUG, "Got here! (BallSortActivity - onCreate)");
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);  // no title bar
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.main);
 
         // get parameters selected by user from setup dialog
@@ -35,6 +36,8 @@ public class BallSortActivity extends Activity {
         gType = b.getString("gType");
 
         bP = (BallPanel)findViewById(R.id.ballpanel);
+        bP.configure(noTs, gType);
+        bP.onWindowFocusChanged(true);
 
 
     }

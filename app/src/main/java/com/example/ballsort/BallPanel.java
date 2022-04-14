@@ -49,7 +49,7 @@ public class BallPanel extends View {
     int labelTextSize, statsTextSize, gap, offset;
 
     RectF innerRectangle, outerRectangle, innerShadowRectangle, outerShadowRectangle, ballNow, upLeft, upMid, upRight, midLeft, midRight, bLeft, bMid, bRight, whiteRect;
-    boolean touchFlag;
+    boolean touchFlag, oWFC;
     Vibrator vib;
     int wallHits;
 
@@ -104,15 +104,15 @@ public class BallPanel extends View {
         greenPaint.setStyle(Paint.Style.FILL);
 
         pinkPaint = new Paint();
-        pinkPaint.setColor(0xffc0cb);
+        pinkPaint.setColor(Color.parseColor("#FFC0CB"));
         pinkPaint.setStyle(Paint.Style.FILL);
 
         orangePaint = new Paint();
-        orangePaint.setColor(0xff6600);
+        orangePaint.setColor(Color.parseColor("#FF6600"));
         orangePaint.setStyle(Paint.Style.FILL);
 
         purplePaint = new Paint();
-        purplePaint.setColor(0x800080);
+        purplePaint.setColor(Color.parseColor("#800080"));
         purplePaint.setStyle(Paint.Style.FILL);
 
         yellowPaint = new Paint();
@@ -131,6 +131,7 @@ public class BallPanel extends View {
 
         lastT = System.nanoTime();
         this.setBackgroundColor(Color.LTGRAY);
+        Log.i(MYDEBUG, String.valueOf(this.getBackground()));
         touchFlag = false;
         outerRectangle = new RectF();
         innerRectangle = new RectF();
@@ -145,6 +146,7 @@ public class BallPanel extends View {
         bRight = new RectF();
         bMid = new RectF();
         ballNow = new RectF();
+        whiteRect = new RectF();
         wallHits = 0;
 
         vib = (Vibrator)c.getSystemService(Context.VIBRATOR_SERVICE);
@@ -162,6 +164,7 @@ public class BallPanel extends View {
 
     public void onWindowFocusChanged(boolean hasFocus)
     {
+        Log.i(MYDEBUG, "NGL we're changing window focus");
         if (!hasFocus)
             return;
         xCenter = this.getWidth() / 2f;
@@ -170,8 +173,6 @@ public class BallPanel extends View {
         int xcoord = ((int) xCenter);
         int ycoord = ((int) yCenter);
         // check if view is ready for drawing
-        if (updateY == null)
-            return;
 
         // draw the paths
         // draw fills
@@ -220,16 +221,27 @@ public class BallPanel extends View {
         whiteRect.top = (float)(this.getHeight() - (this.getHeight()/3.00));
         whiteRect.bottom = (float)(this.getHeight()/3.00);
 
+
         whiteLeft = (float)(this.getWidth()/3.00);
         whiteRight = (float) (this.getWidth() * 2.00/3.00);
         whiteTop = (float)(this.getHeight() - (this.getHeight()/3.00));
         whiteBottom = (float)(this.getHeight()/3.00);
 
+        oWFC = true;
+        invalidate();
     }
+
     protected void onDraw(Canvas canvas)
     {
+        if(oWFC == false)
+            return;
 
 
+        canvas.drawText("Random text", 100, -29, greenPaint);
+        String cheight = String.valueOf(canvas.getHeight());
+        String cwidth = String.valueOf(canvas.getWidth());
+        Log.i(MYDEBUG, cheight);
+        Log.i(MYDEBUG, cwidth);
         List<Paint> paintList = new ArrayList<>();
         paintList.add(bluePaint);
         paintList.add(greenPaint);
@@ -242,36 +254,36 @@ public class BallPanel extends View {
 
         int choice = (int) Math.floor(Math.random() * 8);
         canvas.drawRect(upLeft, paintList.get(choice));
-        paintList.remove(choice);
+        paintList.remove(paintList.get(choice));
 
         choice = (int) Math.floor(Math.random() * 7);
         canvas.drawRect(midLeft, paintList.get(choice));
-        paintList.remove(choice);
-        Log.i(MYDEBUG, "Fuck");
+        paintList.remove(paintList.get(choice));
+        Log.i(MYDEBUG, "It's drawing, apparently");
 
         choice = (int) Math.floor(Math.random() * 6);
         canvas.drawRect(bLeft, paintList.get(choice));
-        paintList.remove(choice);
+        paintList.remove(paintList.get(choice));
 
         choice = (int) Math.floor(Math.random() * 5);
         canvas.drawRect(bMid, paintList.get(choice));
-        paintList.remove(choice);
+        paintList.remove(paintList.get(choice));
 
         choice = (int) Math.floor(Math.random() * 4);
         canvas.drawRect(bRight, paintList.get(choice));
-        paintList.remove(choice);
+        paintList.remove(paintList.get(choice));
 
         choice = (int) Math.floor(Math.random() * 3);
         canvas.drawRect(midRight, paintList.get(choice));
-        paintList.remove(choice);
+        paintList.remove(paintList.get(choice));
 
         choice = (int) Math.floor(Math.random() * 2);
         canvas.drawRect(upRight, paintList.get(choice));
-        paintList.remove(choice);
+        paintList.remove(paintList.get(choice));
 
         choice = (int) Math.floor(Math.random() * 1);
         canvas.drawRect(upMid, paintList.get(choice));
-        paintList.remove(choice);
+        paintList.remove(paintList.get(choice));
 
 
 
@@ -285,6 +297,14 @@ public class BallPanel extends View {
 
         // draw the ball in its new location
         //canvas.drawBitmap(ball, xBall, yBall, null);
+
+    }
+
+    public void configure(int numTs, String geeType)
+    {
+        noTs = numTs;
+
+        gType = geeType;
 
     }
 }

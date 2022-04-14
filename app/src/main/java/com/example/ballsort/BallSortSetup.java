@@ -5,6 +5,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.util.Log;
@@ -17,10 +19,12 @@ public class BallSortSetup extends Activity {
     final static String[] GESTURE_TYPE = {"Fling", "Tap"};
     Spinner spinNumTrials, spinGesType;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        requestWindowFeature(Window.FEATURE_NO_TITLE);  // no title bar
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.setup);
 
         spinNumTrials = (Spinner) findViewById(R.id.paramNoLaps);
