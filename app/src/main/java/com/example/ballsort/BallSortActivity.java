@@ -18,6 +18,7 @@ public class BallSortActivity extends Activity {
     // parameters from the Setup dialog
     int noTs;
     String gType;
+    BallPanel bP;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -32,6 +33,8 @@ public class BallSortActivity extends Activity {
         Bundle b = getIntent().getExtras();
         noTs = b.getInt("noTs");
         gType = b.getString("gType");
+
+        bP = (BallPanel)findViewById(R.id.ballpanel);
 
 
     }

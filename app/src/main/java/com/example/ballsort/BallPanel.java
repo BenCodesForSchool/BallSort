@@ -9,10 +9,13 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.os.Vibrator;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 import androidx.constraintlayout.solver.widgets.Rectangle;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 public class BallPanel extends View {
@@ -21,7 +24,7 @@ public class BallPanel extends View {
 
     // the ball diameter will be min(width, height) / this_value
     final static float BALL_DIAMETER_ADJUST_FACTOR = 30;
-
+    final static String MYDEBUG = "MYDEBUG"; // for Log.i messages
     final static int DEFAULT_LABEL_TEXT_SIZE = 20; // tweak as necessary
     final static int DEFAULT_STATS_TEXT_SIZE = 10;
     final static int DEFAULT_GAP = 7; // between lines of text
@@ -45,12 +48,12 @@ public class BallPanel extends View {
     float width, height, pixelDensity;
     int labelTextSize, statsTextSize, gap, offset;
 
-    RectF innerRectangle, outerRectangle, innerShadowRectangle, outerShadowRectangle, ballNow, upLeft, upMid, upRight, midLeft, midRight, bLeft, bMid, bRight;
+    RectF innerRectangle, outerRectangle, innerShadowRectangle, outerShadowRectangle, ballNow, upLeft, upMid, upRight, midLeft, midRight, bLeft, bMid, bRight, whiteRect;
     boolean touchFlag;
     Vibrator vib;
     int wallHits;
 
-    float xBall, yBall; // top-left of the ball (for painting)
+    float xBall, yBall, whiteLeft, whiteRight, whiteTop, whiteBottom; // top-left of the ball (for painting)
     float xBallCenter, yBallCenter; // center of the ball
     final static int MIDDLE_SQUARE_LENGTH = 0;
     final static int SQUARE_LENGTH = 0;
@@ -153,13 +156,14 @@ public class BallPanel extends View {
         int ycoord = ((int) yCenter);
 
 
-        Rectangle white = new Rectangle();
-        white.setBounds(xcoord/2, ycoord/2, xcoord * 3/2, ycoord * 3/2);
+
 
     }
 
-    protected void onDraw(Canvas canvas)
+    public void onWindowFocusChanged(boolean hasFocus)
     {
+        if (!hasFocus)
+            return;
         xCenter = this.getWidth() / 2f;
         yCenter = this.getHeight() / 2f;
 
@@ -170,12 +174,11 @@ public class BallPanel extends View {
             return;
 
         // draw the paths
-            // draw fills
+        // draw fills
         upLeft.left = (float) (0.00);
         upLeft.right = (float) (this.getWidth()/3.00);
         upLeft.bottom = (float) (this.getHeight() - (this.getHeight()/3.00));
         upLeft.top = (float)(this.getHeight());
-        canvas.drawRect(upLeft, bluePaint);
 
         upMid.left = (float)(this.getWidth()/3.00);
         upMid.bottom = (float)(this.getHeight() - (this.getHeight()/3.00));
@@ -212,19 +215,76 @@ public class BallPanel extends View {
         bRight.bottom = (float) (0.00);
         bRight.top = (float)(this.getHeight()/3.00);
 
+        whiteRect.left = (float)(this.getWidth()/3.00);
+        whiteRect.right = (float) (this.getWidth() * 2.00/3.00);
+        whiteRect.top = (float)(this.getHeight() - (this.getHeight()/3.00));
+        whiteRect.bottom = (float)(this.getHeight()/3.00);
+
+        whiteLeft = (float)(this.getWidth()/3.00);
+        whiteRight = (float) (this.getWidth() * 2.00/3.00);
+        whiteTop = (float)(this.getHeight() - (this.getHeight()/3.00));
+        whiteBottom = (float)(this.getHeight()/3.00);
+
+    }
+    protected void onDraw(Canvas canvas)
+    {
+
+
+        List<Paint> paintList = new ArrayList<>();
+        paintList.add(bluePaint);
+        paintList.add(greenPaint);
+        paintList.add(orangePaint);
+        paintList.add(purplePaint);
+        paintList.add(pinkPaint);
+        paintList.add(yellowPaint);
+        paintList.add(cyanPaint);
+        paintList.add(redPaint);
+
+        int choice = (int) Math.floor(Math.random() * 8);
+        canvas.drawRect(upLeft, paintList.get(choice));
+        paintList.remove(choice);
+
+        choice = (int) Math.floor(Math.random() * 7);
+        canvas.drawRect(midLeft, paintList.get(choice));
+        paintList.remove(choice);
+        Log.i(MYDEBUG, "Fuck");
+
+        choice = (int) Math.floor(Math.random() * 6);
+        canvas.drawRect(bLeft, paintList.get(choice));
+        paintList.remove(choice);
+
+        choice = (int) Math.floor(Math.random() * 5);
+        canvas.drawRect(bMid, paintList.get(choice));
+        paintList.remove(choice);
+
+        choice = (int) Math.floor(Math.random() * 4);
+        canvas.drawRect(bRight, paintList.get(choice));
+        paintList.remove(choice);
+
+        choice = (int) Math.floor(Math.random() * 3);
+        canvas.drawRect(midRight, paintList.get(choice));
+        paintList.remove(choice);
+
+        choice = (int) Math.floor(Math.random() * 2);
+        canvas.drawRect(upRight, paintList.get(choice));
+        paintList.remove(choice);
+
+        choice = (int) Math.floor(Math.random() * 1);
+        canvas.drawRect(upMid, paintList.get(choice));
+        paintList.remove(choice);
 
 
 
-            Paint white = new Paint();
-            white.setColor(Color.WHITE);
-            canvas.drawRoundRect(new RectF(xcoord/2, ycoord/2, xcoord * 3/2, ycoord * 3/2), 10, 10, white);
+        Paint white = new Paint();
+        white.setColor(Color.WHITE);
+        canvas.drawRoundRect(new RectF(whiteLeft, whiteTop, whiteRight, whiteBottom), 10, 10, white);
 
             // draw lines
 
 
 
         // draw the ball in its new location
-        canvas.drawBitmap(ball, xBall, yBall, null);
+        //canvas.drawBitmap(ball, xBall, yBall, null);
 
     }
 }
