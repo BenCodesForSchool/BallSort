@@ -3,6 +3,7 @@ package com.example.ballsort;
 import static android.view.MotionEvent.INVALID_POINTER_ID;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -47,6 +48,7 @@ public class BallPanel extends View {
     final static float PATH_WIDTH_MEDIUM = 4f; // ... x ball diameter
     final static float PATH_WIDTH_WIDE = 8f; // ... x ball diameter
 
+    long startTime, endTime;
     float radiusOuter, radiusInner;
 
     Bitmap ball, blueBallBitmap, redBallBitmap, greenBallBitmap, magentaBallBitmap, orangeBallBitmap, turquoiseBallBitmap, violetBallBitmap, yellowBallBitmap;
@@ -60,6 +62,8 @@ public class BallPanel extends View {
     float width, height, pixelDensity, veloX, veloY;
     int labelTextSize, statsTextSize, gap, offset;
     int trials;
+    float[] taptimes;
+    float[] flingtimes = new float[trials];
     int tapTrialsDone, flingTrialsDone, tapSuccesses, flingSuccesses;
     boolean flinging;
     boolean ballFlings, ballFlag;
@@ -254,6 +258,7 @@ public class BallPanel extends View {
                     ballSelected = true;
                     lastTouchX = x;
                     lastTouchY = y;
+                    startTime = System.currentTimeMillis();
 
                     // save the ID of this pointer
                     activePointerId = me.getPointerId(0);
@@ -312,11 +317,21 @@ public class BallPanel extends View {
                 {
                     if(ballTapped && !ballSelected)
                     {
+                        endTime = System.currentTimeMillis();
                         if(target.contains(xBall, yBall))
                         {
                             tapSuccesses += 1;
                         }
+                        float totaltime = endTime - startTime;
+                        taptimes[tapTrialsDone] = totaltime/1000;
+                        Log.i(MYDEBUG, "This much time: " + taptimes[tapTrialsDone]);
                         tapTrialsDone += 1;
+                        if(tapTrialsDone == trials)
+                        {
+                            Intent i  = new Intent(this.getContext(), BallSortSetup.class);
+                            this.getContext().startActivity(i);
+                            android.os.Process.killProcess(android.os.Process.myPid());
+                        }
                         Log.i(MYDEBUG, "taptrialsdone = " + tapTrialsDone + " tapsuccesses " + tapSuccesses);
                         ballTapped = false;
                         onWindowFocusChanged(true);
@@ -432,6 +447,12 @@ public class BallPanel extends View {
                 flingSuccesses += 1;
                 Log.i(MYDEBUG, "flingSuccesses = " + flingSuccesses);
             }
+            if(flingTrialsDone == trials)
+            {
+                Intent i  = new Intent(this.getContext(), BallSortSetup.class);
+                this.getContext().startActivity(i);
+                android.os.Process.killProcess(android.os.Process.myPid());
+            }
             onWindowFocusChanged(true);
             //Log.i(MYDEBUG, "But is it getting here first?");
         }
@@ -466,6 +487,10 @@ public class BallPanel extends View {
             // ignore this fling gesture if the initial ACTION_DOWN was outside the image
             if (!ballSelected)
                 return true;
+            endTime = System.currentTimeMillis();
+            float totalTime = endTime - startTime;
+            flingtimes[flingTrialsDone] = totalTime/1000;
+            Log.i(MYDEBUG, "This much time: " + flingtimes[flingTrialsDone] + " this is how many trials: " + flingTrialsDone + " This is how big " + flingtimes.length);
             if(flinging)
             {
                 Log.i(MYDEBUG, "Flinging");
@@ -805,7 +830,9 @@ public class BallPanel extends View {
     {
         noTs = numTs;
 
-        trials = 25 * noTs;
+        trials = 5 * noTs;
+        taptimes = new float[trials];
+        flingtimes = new float[trials];
 
         gType = geeType;
         Log.i(MYDEBUG, "Here it is bruh" +  gType);
