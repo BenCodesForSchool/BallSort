@@ -45,4 +45,9 @@ public class BallSortActivity extends Activity {
 
     }
 
+    public void onFinish()
+    {
+        onDestroy();
+    }
+
 }

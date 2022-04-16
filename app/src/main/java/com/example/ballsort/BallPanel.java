@@ -47,7 +47,7 @@ public class BallPanel extends View {
     final static int DEFAULT_STATS_TEXT_SIZE = 10;
     final static int DEFAULT_GAP = 7; // between lines of text
     final static int DEFAULT_OFFSET = 10; // from bottom of display
-    private BufferedWriter sd1, sd2, sd3;
+    private BufferedWriter sd1, sd2, sd3, sd4;
 
     final static int MODE_NONE = 0;
     final static int PATH_TYPE_SQUARE = 1;
@@ -94,7 +94,7 @@ public class BallPanel extends View {
     private float flingVelocity;
     private float flingAngle;
     CountDownTimer flingTimer;
-    private File f1, f2, f3;
+    private File f2;
 
 
 
@@ -242,41 +242,26 @@ public class BallPanel extends View {
         };
 
         pixelDensity = c.getResources().getDisplayMetrics().density;
+
+
         String parent = String.valueOf(Environment.getExternalStorageDirectory());
         Log.i(MYDEBUG ,"HERE IT IS BUDDY " + parent);
         if (Environment.isExternalStorageManager()) {
             File dataDirectory = new File(Environment.getExternalStorageDirectory() +
                     DATA_DIRECTORY);
-            Log.i(MYDEBUG, "HERE IS THE DATA DIRECTORY: "+ dataDirectory);
+            Log.i(MYDEBUG, "HERE IS THE DATA DIRECTORY PRE: "+ dataDirectory);
             if (!dataDirectory.exists() && !dataDirectory.mkdirs())
             {
                 Log.i(MYDEBUG, "does it exist? " + dataDirectory.exists() + "  can it be made? " + dataDirectory.mkdirs());
                 Log.e(MYDEBUG, "ERROR --> FAILED TO CREATE DIRECTORY: " + DATA_DIRECTORY);
             }
-            int blockNumber = 0;
-            do
+            if(f2 == null)
             {
-                ++blockNumber;
-                String blockCode = String.format(Locale.CANADA, "B%02d", blockNumber);
-                f1 = new File(dataDirectory, "BallSortStuff" + ".sd1");
                 f2 = new File(dataDirectory, "BallSortStuff" + ".sd2");
-
-                // also make a comma-delimited leader that will begin each data line written to the sd2 file
-            } while (f1.exists() || f2.exists());
-
-            try
+            }
+            if(!f2.exists())
             {
-                sd1 = new BufferedWriter(new FileWriter(f1));
-                sd2 = new BufferedWriter(new FileWriter(f2));
-
-                 //output header in sd2 file
-                sd2.write("Times and Successes: ");
-                sd2.flush();
-
-            } catch (IOException e)
-            {
-                Log.e(MYDEBUG, "ERROR OPENING DATA FILES! e=" + e.toString());
-
+                f2 = new File(dataDirectory, "BallSortStuff" + ".sd2");
             }
         } else {
             //request for the permission
@@ -284,6 +269,7 @@ public class BallPanel extends View {
             Uri uri = Uri.fromParts("package","com.example.ballsort", null);
             intent.setData(uri);
             this.getContext().startActivity(intent);
+            Log.i(MYDEBUG, "Reached the end of initialize");
         }
 
 
@@ -409,6 +395,7 @@ public class BallPanel extends View {
 
 
                             }
+                            sd2Data.append("\n");
                             // sd1.write(sd1Stuff.toString(), 0, sd1Stuff.length());
                             //sd1.flush();
 
@@ -424,30 +411,30 @@ public class BallPanel extends View {
                                 if (Environment.isExternalStorageManager()) {
                                     File dataDirectory = new File(Environment.getExternalStorageDirectory() +
                                             DATA_DIRECTORY);
-                                    Log.i(MYDEBUG, "HERE IS THE DATA DIRECTORY: "+ dataDirectory);
+                                    Log.i(MYDEBUG, "HERE IS THE DATA DIRECTORY TAP: "+ dataDirectory);
                                     if (!dataDirectory.exists() && !dataDirectory.mkdirs())
                                     {
                                         Log.i(MYDEBUG, "does it exist? " + dataDirectory.exists() + "  can it be made? " + dataDirectory.mkdirs());
                                         Log.e(MYDEBUG, "ERROR --> FAILED TO CREATE DIRECTORY: " + DATA_DIRECTORY);
                                     }
-                                    int blockNumber = 0;
-                                    do
+                                    if(f2 == null)
                                     {
-                                        ++blockNumber;
-                                        String blockCode = String.format(Locale.CANADA, "B%02d", blockNumber);
-                                        f1 = new File(dataDirectory, "BallSortStuff" + ".sd1");
                                         f2 = new File(dataDirectory, "BallSortStuff" + ".sd2");
+                                    }
+                                    if(!f2.exists())
+                                    {
+                                        f2 = new File(dataDirectory, "BallSortStuff" + ".sd2");
+                                    }
 
-                                        // also make a comma-delimited leader that will begin each data line written to the sd2 file
-                                    } while (f1.exists() || f2.exists());
+
 
                                     try
                                     {
 
-                                        sd3 = new BufferedWriter(new FileWriter(f2));
+                                        sd3 = new BufferedWriter(new FileWriter(f2, true));
                                         sd3.write(sd2Data.toString(), 0, sd2Data.length());
                                         Log.i(MYDEBUG, "It's been written");
-                                        sd3.flush();
+                                        sd3.close();
 
                                     } catch (IOException e)
                                     {
@@ -466,7 +453,7 @@ public class BallPanel extends View {
 
                             Intent i  = new Intent(this.getContext(), BallSortSetup.class);
                             this.getContext().startActivity(i);
-                            Process.killProcess(Process.myPid());
+                            android.os.Process.killProcess(android.os.Process.myPid());
                         }
                         Log.i(MYDEBUG, "taptrialsdone = " + tapTrialsDone + " tapsuccesses " + tapSuccesses);
                         ballTapped = false;
@@ -588,12 +575,67 @@ public class BallPanel extends View {
             if(flingTrialsDone == trials)
             {
                 StringBuilder sd2Data = new StringBuilder(100);
+                sd2Data.append("Fling trial results:  \n");
                 for(int o = 0; o < trials; o++)
                 {
                     sd2Data.append(String.format(Locale.CANADA, "%.2f,", flingtimes[o]));
                     sd2Data.append(String.format(Locale.CANADA, "%.2f,", flingSucs[o]));
 
                 }
+                sd2Data.append("\n");
+                // sd1.write(sd1Stuff.toString(), 0, sd1Stuff.length());
+                //sd1.flush();
+
+                if(sd2 == null)
+                {
+                    Log.i(MYDEBUG, "Holy fuck");
+                }
+                if(f2 == null)
+                {
+                    Log.i(MYDEBUG, "Jesus fucking Christ");
+                }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    if (Environment.isExternalStorageManager()) {
+                        File dataDirectory = new File(Environment.getExternalStorageDirectory() +
+                                DATA_DIRECTORY);
+                        Log.i(MYDEBUG, "HERE IS THE DATA DIRECTORY FLING: "+ dataDirectory);
+                        if (!dataDirectory.exists() && !dataDirectory.mkdirs())
+                        {
+                            Log.i(MYDEBUG, "does it exist? " + dataDirectory.exists() + "  can it be made? " + dataDirectory.mkdirs());
+                            Log.e(MYDEBUG, "ERROR --> FAILED TO CREATE DIRECTORY: " + DATA_DIRECTORY);
+                        }
+                        if(f2 == null)
+                        {
+                            f2 = new File(dataDirectory, "BallSortStuff" + ".sd2");
+                        }
+
+
+                            // also make a comma-delimited leader that will begin each data line written to the sd2 file
+
+
+                        try
+                        {
+
+                            sd4 = new BufferedWriter(new FileWriter(f2, true));
+                            sd4.write(sd2Data.toString(), 0, sd2Data.length());
+                            Log.i(MYDEBUG, "It's been written");
+                            sd4.flush();
+                            sd4.close();
+
+                        } catch (IOException e)
+                        {
+                            Log.e(MYDEBUG, "ERROR OPENING DATA FILES! e=" + e.toString());
+
+                        }
+                    } else {
+                        //request for the permission
+                        Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+                        Uri uri = Uri.fromParts("package","com.example.ballsort", null);
+                        intent.setData(uri);
+                        this.getContext().startActivity(intent);
+                    }
+                }
+
                 Intent i  = new Intent(this.getContext(), BallSortSetup.class);
                 this.getContext().startActivity(i);
                 android.os.Process.killProcess(android.os.Process.myPid());
