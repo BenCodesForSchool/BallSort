@@ -12,6 +12,7 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.os.Build;
 import android.os.CountDownTimer;
+import android.os.Environment;
 import android.os.Vibrator;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -22,6 +23,10 @@ import android.view.View;
 import androidx.annotation.RequiresApi;
 import androidx.constraintlayout.solver.widgets.Rectangle;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +36,7 @@ public class BallPanel extends View {
 
     final static int TIMER_DELAY = 5;
     final static float DEGREES_TO_RADIANS = 0.0174532925f;
-
+    private final static String DATA_DIRECTORY = "/BallSortData/";
     // the ball diameter will be min(width, height) / this_value
     final static float BALL_DIAMETER_ADJUST_FACTOR = 30;
     final static String MYDEBUG = "MYDEBUG"; // for Log.i messages
@@ -39,6 +44,7 @@ public class BallPanel extends View {
     final static int DEFAULT_STATS_TEXT_SIZE = 10;
     final static int DEFAULT_GAP = 7; // between lines of text
     final static int DEFAULT_OFFSET = 10; // from bottom of display
+    private BufferedWriter sd1, sd2;
 
     final static int MODE_NONE = 0;
     final static int PATH_TYPE_SQUARE = 1;
@@ -63,7 +69,8 @@ public class BallPanel extends View {
     int labelTextSize, statsTextSize, gap, offset;
     int trials;
     float[] taptimes;
-    float[] flingtimes = new float[trials];
+    float[] flingtimes;
+    float[] tapSucs, flingSucs;
     int tapTrialsDone, flingTrialsDone, tapSuccesses, flingSuccesses;
     boolean flinging;
     boolean ballFlings, ballFlag;
@@ -84,6 +91,7 @@ public class BallPanel extends View {
     private float flingVelocity;
     private float flingAngle;
     CountDownTimer flingTimer;
+    private File f1, f2;
 
 
 
@@ -227,6 +235,47 @@ public class BallPanel extends View {
         };
         pixelDensity = c.getResources().getDisplayMetrics().density;
 
+        File dataDirectory = new File(Environment.getExternalStorageDirectory() +
+                DATA_DIRECTORY);
+        if (!dataDirectory.exists() && !dataDirectory.mkdirs())
+        {
+            Log.e(MYDEBUG, "ERROR --> FAILED TO CREATE DIRECTORY: " + DATA_DIRECTORY);
+        }
+
+        /**
+         * The following do-loop creates data files for output and a string sd2Leader to write to the sd2
+         * output files.  Both the filenames and the sd2Leader are constructed by combining the setup parameters
+         * so that the filenames and sd2Leader are unique and also reveal the conditions used for the block of input.
+         *
+         * The block code begins "B01" and is incremented on each loop iteration until an available
+         * filename is found.  The goal, of course, is to ensure data files are not inadvertently overwritten.
+         */
+        int blockNumber = 0;
+        do
+        {
+            ++blockNumber;
+            String blockCode = String.format(Locale.CANADA, "B%02d", blockNumber);
+            f1 = new File(dataDirectory, "BallSortStuff" + ".sd1");
+            f2 = new File(dataDirectory, "BallSortStuff" + ".sd2");
+
+            // also make a comma-delimited leader that will begin each data line written to the sd2 file
+        } while (f1.exists() || f2.exists());
+
+        try
+        {
+            sd1 = new BufferedWriter(new FileWriter(f1));
+            sd2 = new BufferedWriter(new FileWriter(f2));
+
+            // output header in sd2 file
+            sd2.write("Times and Successes: ");
+            sd2.flush();
+
+        } catch (IOException e)
+        {
+            Log.e(MYDEBUG, "ERROR OPENING DATA FILES! e=" + e.toString());
+
+        }
+
     }
     @RequiresApi(api = Build.VERSION_CODES.Q)
     @Override
@@ -328,6 +377,23 @@ public class BallPanel extends View {
                         tapTrialsDone += 1;
                         if(tapTrialsDone == trials)
                         {
+                            StringBuilder sd2Data = new StringBuilder(100);
+                            for(int o = 0; o < trials; o++)
+                            {
+                                sd2Data.append(String.format(Locale.CANADA, "%.2f,", taptimes[o]));
+                                sd2Data.append(String.format(Locale.CANADA, "%.2f,", tapSucs[o]));
+
+                            }
+                            try
+                            {
+                               // sd1.write(sd1Stuff.toString(), 0, sd1Stuff.length());
+                                //sd1.flush();
+                                sd2.write(sd2Data.toString(), 0, sd2Data.length());
+                                sd2.flush();
+                            } catch (IOException e)
+                            {
+                                Log.e("MYDEBUG", "ERROR WRITING TO DATA FILE!\n" + e);
+                            }
                             Intent i  = new Intent(this.getContext(), BallSortSetup.class);
                             this.getContext().startActivity(i);
                             android.os.Process.killProcess(android.os.Process.myPid());
@@ -439,16 +505,25 @@ public class BallPanel extends View {
             flingTimer.cancel();
             ballFlings = false;
             moving = false;
-            flingTrialsDone += 1;
+
             //Log.i(MYDEBUG, "target.left = " + target.left + " target.right = " + target.right + " xBall = " + xBall + " yBall = " + yBall + " ballDiameter = " + ballDiameter + " target.top = " + target.top + " target.bottom = " + target.bottom);
             if(target.left < xBall && target.right > xBall + ballDiameter && target.top < yBall - ballDiameter && target.bottom > yBall)
             {
                 Log.i(MYDEBUG, "fling success!");
+                flingSucs[flingTrialsDone] = 1;
                 flingSuccesses += 1;
                 Log.i(MYDEBUG, "flingSuccesses = " + flingSuccesses);
             }
+            flingTrialsDone += 1;
             if(flingTrialsDone == trials)
             {
+                StringBuilder sd2Data = new StringBuilder(100);
+                for(int o = 0; o < trials; o++)
+                {
+                    sd2Data.append(String.format(Locale.CANADA, "%.2f,", flingtimes[o]));
+                    sd2Data.append(String.format(Locale.CANADA, "%.2f,", flingSucs[o]));
+
+                }
                 Intent i  = new Intent(this.getContext(), BallSortSetup.class);
                 this.getContext().startActivity(i);
                 android.os.Process.killProcess(android.os.Process.myPid());
@@ -833,6 +908,8 @@ public class BallPanel extends View {
         trials = 5 * noTs;
         taptimes = new float[trials];
         flingtimes = new float[trials];
+        tapSucs = new float[trials];
+        flingSucs = new float[trials];
 
         gType = geeType;
         Log.i(MYDEBUG, "Here it is bruh" +  gType);
