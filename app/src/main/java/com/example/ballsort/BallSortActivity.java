@@ -2,6 +2,7 @@ package com.example.ballsort;
 
 import android.app.Activity;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.util.Log;
@@ -10,6 +11,7 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 public class BallSortActivity extends Activity {
 
@@ -20,6 +22,7 @@ public class BallSortActivity extends Activity {
     String gType;
     BallPanel bP;
 
+    @RequiresApi(api = Build.VERSION_CODES.Q)
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

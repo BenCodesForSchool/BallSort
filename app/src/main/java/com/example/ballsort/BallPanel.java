@@ -59,9 +59,9 @@ public class BallPanel extends View {
 
     float width, height, pixelDensity, veloX, veloY;
     int labelTextSize, statsTextSize, gap, offset;
-    int trials = 25;
+    int trials;
     int tapTrialsDone, flingTrialsDone, tapSuccesses, flingSuccesses;
-    boolean flinging = true;
+    boolean flinging;
     boolean ballFlings, ballFlag;
 
 
@@ -279,26 +279,29 @@ public class BallPanel extends View {
                 // ignore the move gesture if the initial ACTION_DOWN was outside the image
                 if (!ballSelected)
                     break;
+                if(flinging)
+                {
+                    Log.i(MYDEBUG, "It's moving");
+                    moving = true;
+                    if (activePointerId != INVALID_POINTER_ID) {
+                        // find the index of the active pointer and fetch its position
+                        final int pointerIndex = me.findPointerIndex(activePointerId);
+                        final float x = me.getX(pointerIndex);
+                        final float y = me.getY(pointerIndex);
 
-                Log.i(MYDEBUG, "It's moving");
-                moving = true;
-                if (activePointerId != INVALID_POINTER_ID) {
-                    // find the index of the active pointer and fetch its position
-                    final int pointerIndex = me.findPointerIndex(activePointerId);
-                    final float x = me.getX(pointerIndex);
-                    final float y = me.getY(pointerIndex);
+                        // use this position to compute the 'delta' for the image
+                        final float dx = x - lastTouchX;
+                        final float dy = y - lastTouchY;
+                        xBall += dx;
+                        yBall += dy;
+                        invalidate();
 
-                    // use this position to compute the 'delta' for the image
-                    final float dx = x - lastTouchX;
-                    final float dy = y - lastTouchY;
-                    xBall += dx;
-                    yBall += dy;
-                    invalidate();
-
-                    // the current pointer position becomes the last position
-                    lastTouchX = x;
-                    lastTouchY = y;
+                        // the current pointer position becomes the last position
+                        lastTouchX = x;
+                        lastTouchY = y;
+                    }
                 }
+
                 break;
             }
 
@@ -314,6 +317,7 @@ public class BallPanel extends View {
                             tapSuccesses += 1;
                         }
                         tapTrialsDone += 1;
+                        Log.i(MYDEBUG, "taptrialsdone = " + tapTrialsDone + " tapsuccesses " + tapSuccesses);
                         ballTapped = false;
                         onWindowFocusChanged(true);
 
@@ -419,16 +423,21 @@ public class BallPanel extends View {
 
             flingTimer.cancel();
             ballFlings = false;
+            moving = false;
             flingTrialsDone += 1;
-            if(target.contains(xBall, yBall))
+            //Log.i(MYDEBUG, "target.left = " + target.left + " target.right = " + target.right + " xBall = " + xBall + " yBall = " + yBall + " ballDiameter = " + ballDiameter + " target.top = " + target.top + " target.bottom = " + target.bottom);
+            if(target.left < xBall && target.right > xBall + ballDiameter && target.top < yBall - ballDiameter && target.bottom > yBall)
             {
+                Log.i(MYDEBUG, "fling success!");
                 flingSuccesses += 1;
+                Log.i(MYDEBUG, "flingSuccesses = " + flingSuccesses);
             }
             onWindowFocusChanged(true);
+            //Log.i(MYDEBUG, "But is it getting here first?");
         }
         else
         {
-            Log.i(MYDEBUG, "Fling beginning");
+            //Log.i(MYDEBUG, "Fling beginning");
             flingTimer.start();
         }
 
@@ -457,14 +466,21 @@ public class BallPanel extends View {
             // ignore this fling gesture if the initial ACTION_DOWN was outside the image
             if (!ballSelected)
                 return true;
+            if(flinging)
+            {
+                Log.i(MYDEBUG, "Flinging");
+                flingVelocity = (float)Math.sqrt(velocityX * velocityX + velocityY * velocityY);
+                flingAngle = (float)Math.atan2(velocityY, velocityX);
+                veloX = velocityX;
+                veloY = velocityY;
+                flingTimer.start();
+                ballFlings = true;
+                if(velocityX == 0 && velocityY == 0)
+                {
+                    ballFlings = false;
+                }
+            }
 
-            Log.i(MYDEBUG, "Flinging");
-            flingVelocity = (float)Math.sqrt(velocityX * velocityX + velocityY * velocityY);
-            flingAngle = (float)Math.atan2(velocityY, velocityX);
-            veloX = velocityX;
-            veloY = velocityY;
-            flingTimer.start();
-            ballFlings = true;
             return true;
         }
     }
@@ -490,63 +506,63 @@ public class BallPanel extends View {
         // draw fills
         upLeft.left = (float) (0.00);
         upLeft.right = (float) (this.getWidth()/3.00);
-        upLeft.bottom = (float) (this.getHeight() - (this.getHeight()/3.00));
-        upLeft.top = (float)(this.getHeight());
+        upLeft.bottom = (float)(this.getHeight());
+        upLeft.top = (float) (this.getHeight() - (this.getHeight()/3.00));
 
 
         upMid.left = (float)(this.getWidth()/3.00);
-        upMid.bottom = (float)(this.getHeight() - (this.getHeight()/3.00));
-        upMid.top = (float)(this.getHeight());
+        upMid.bottom = (float)(this.getHeight());
+        upMid.top = (float)(this.getHeight() - (this.getHeight()/3.00));
         upMid.right = (float) (this.getWidth() * 2.00/3.00);
 
 
         upRight.left = (float)(this.getWidth() * 2.00/3.00);
-        upRight.bottom = (float)(this.getHeight() - (this.getHeight()/3.00));
-        upRight.top = (float)(this.getHeight());
+        upRight.bottom = (float)(this.getHeight());
+        upRight.top = (float)(this.getHeight() - (this.getHeight()/3.00));
         upRight.right = (float) (this.getWidth());
 
 
         midLeft.left = (float) (0.00);
         midLeft.right = (float) (this.getWidth()/3.00);
-        midLeft.bottom = (float) (this.getHeight()/3.00);
-        midLeft.top = (float)(this.getHeight() - (this.getHeight()/3.00));
+        midLeft.bottom = (float)(this.getHeight() - (this.getHeight()/3.00));
+        midLeft.top = (float) (this.getHeight()/3.00);
 
 
         midRight.left = (float)(this.getWidth() * 2.00/3.00);
         midRight.right = (float) (this.getWidth());
-        midRight.bottom = (float) (this.getHeight()/3.00);
-        midRight.top = (float)(this.getHeight() - (this.getHeight()/3.00));
+        midRight.bottom = (float)(this.getHeight() - (this.getHeight()/3.00));
+        midRight.top = (float) (this.getHeight()/3.00);
 
 
         bLeft.left = (float) (0.00);
         bLeft.right = (float) (this.getWidth()/3.00);
-        bLeft.bottom = (float) (0.00);
-        bLeft.top = (float)(this.getHeight()/3.00);
+        bLeft.bottom = (float)(this.getHeight()/3.00);
+        bLeft.top = (float) (0.00);
 
 
         bMid.left = (float)(this.getWidth()/3.00);
         bMid.right = (float) (this.getWidth() * 2.00/3.00);
-        bMid.bottom = (float) (0.00);
-        bMid.top = (float)(this.getHeight()/3.00);
+        bMid.bottom = (float)(this.getHeight()/3.00);
+        bMid.top = (float) (0.00);
 
 
         bRight.left = (float)(this.getWidth() * 2.00/3.00);
         bRight.right = (float) (this.getWidth());
-        bRight.bottom = (float) (0.00);
-        bRight.top = (float)(this.getHeight()/3.00);
+        bRight.bottom = (float)(this.getHeight()/3.00);
+        bRight.top = (float) (0.00);
 
 
         whiteRect.left = (float)(this.getWidth()/3.00);
         whiteRect.right = (float) (this.getWidth() * 2.00/3.00);
-        whiteRect.top = (float)(this.getHeight() - (this.getHeight()/3.00));
-        whiteRect.bottom = (float)(this.getHeight()/3.00);
+        whiteRect.top = (float)(this.getHeight()/3.00);
+        whiteRect.bottom = (float)(this.getHeight() - (this.getHeight()/3.00));
 
 
 
         whiteLeft = (float)(this.getWidth()/3.00);
         whiteRight = (float) (this.getWidth() * 2.00/3.00);
-        whiteTop = (float)(this.getHeight() - (this.getHeight()/3.00));
-        whiteBottom = (float)(this.getHeight()/3.00);
+        whiteTop = (float)(this.getHeight()/3.00);
+        whiteBottom = (float)(this.getHeight() - (this.getHeight()/3.00));
         if(oWFC == true)
         {
             ballDiameter = (int) (xCenter/ 15);
@@ -609,7 +625,7 @@ public class BallPanel extends View {
 
         if(ballTapped == true)
         {
-
+            Log.i(MYDEBUG, "Hey we're getting to this place");
             for (int j = 0; j < 8; j++)
             {
                 canvas.drawRect(squares[j], masterPaints[j]);
@@ -622,9 +638,10 @@ public class BallPanel extends View {
             }
             return;
         }
+
         if(moving == true || ballFlings == true)
         {
-
+            Log.i(MYDEBUG, "It's actually getting here");
             for (int j = 0; j < 8; j++)
             {
                 canvas.drawRect(squares[j], masterPaints[j]);
@@ -771,13 +788,14 @@ public class BallPanel extends View {
     {
         if(ballString == "b" && paint == bluePaint || ballString == "g" && paint == greenPaint || ballString == "r" && paint == redPaint || ballString == "o" & paint == orangePaint || ballString == "m" & paint == magentaPaint || ballString == "v" & paint == violetPaint || ballString == "t" & paint == turquoisePaint || ballString == "y" & paint == yellowPaint)
         {
-            RectF target = new RectF();
+
             target.left = r.left;
             target.right = r.right;
             target.top = r.top;
             target.bottom = r.bottom;
             targetPaint = paint;
             canvas.drawRect(target, paint);
+            Log.i(MYDEBUG, "Target. left = " + target.left + " target.right = " + target.right);
             return true;
         }
         return false;
@@ -787,7 +805,15 @@ public class BallPanel extends View {
     {
         noTs = numTs;
 
+        trials = 25 * noTs;
+
         gType = geeType;
+        Log.i(MYDEBUG, "Here it is bruh" +  gType);
+        if(gType.equals("Fling"))
+        {
+            flinging = true;
+        }
+        Log.i(MYDEBUG, "What is flinging? " + flinging);
 
     }
 }
