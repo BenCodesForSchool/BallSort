@@ -10,10 +10,13 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.net.Uri;
 import android.os.Build;
 import android.os.CountDownTimer;
 import android.os.Environment;
+import android.os.Process;
 import android.os.Vibrator;
+import android.provider.Settings;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -44,7 +47,7 @@ public class BallPanel extends View {
     final static int DEFAULT_STATS_TEXT_SIZE = 10;
     final static int DEFAULT_GAP = 7; // between lines of text
     final static int DEFAULT_OFFSET = 10; // from bottom of display
-    private BufferedWriter sd1, sd2;
+    private BufferedWriter sd1, sd2, sd3;
 
     final static int MODE_NONE = 0;
     final static int PATH_TYPE_SQUARE = 1;
@@ -91,7 +94,7 @@ public class BallPanel extends View {
     private float flingVelocity;
     private float flingAngle;
     CountDownTimer flingTimer;
-    private File f1, f2;
+    private File f1, f2, f3;
 
 
 
@@ -109,24 +112,28 @@ public class BallPanel extends View {
 
     float[] updateY;
 
+    @RequiresApi(api = Build.VERSION_CODES.R)
     public BallPanel(Context contextArg)
     {
         super(contextArg);
         initialize(contextArg);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.R)
     public BallPanel(Context contextArg, AttributeSet attrs)
     {
         super(contextArg, attrs);
         initialize(contextArg);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.R)
     public BallPanel(Context contextArg, AttributeSet attrs, int defStyle)
     {
         super(contextArg, attrs, defStyle);
         initialize(contextArg);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.R)
     private void initialize(Context c)
     {
         redPaint = new Paint();
@@ -233,14 +240,52 @@ public class BallPanel extends View {
                 doFling();
             }
         };
-        pixelDensity = c.getResources().getDisplayMetrics().density;
 
-        File dataDirectory = new File(Environment.getExternalStorageDirectory() +
-                DATA_DIRECTORY);
-        if (!dataDirectory.exists() && !dataDirectory.mkdirs())
-        {
-            Log.e(MYDEBUG, "ERROR --> FAILED TO CREATE DIRECTORY: " + DATA_DIRECTORY);
+        pixelDensity = c.getResources().getDisplayMetrics().density;
+        String parent = String.valueOf(Environment.getExternalStorageDirectory());
+        Log.i(MYDEBUG ,"HERE IT IS BUDDY " + parent);
+        if (Environment.isExternalStorageManager()) {
+            File dataDirectory = new File(Environment.getExternalStorageDirectory() +
+                    DATA_DIRECTORY);
+            Log.i(MYDEBUG, "HERE IS THE DATA DIRECTORY: "+ dataDirectory);
+            if (!dataDirectory.exists() && !dataDirectory.mkdirs())
+            {
+                Log.i(MYDEBUG, "does it exist? " + dataDirectory.exists() + "  can it be made? " + dataDirectory.mkdirs());
+                Log.e(MYDEBUG, "ERROR --> FAILED TO CREATE DIRECTORY: " + DATA_DIRECTORY);
+            }
+            int blockNumber = 0;
+            do
+            {
+                ++blockNumber;
+                String blockCode = String.format(Locale.CANADA, "B%02d", blockNumber);
+                f1 = new File(dataDirectory, "BallSortStuff" + ".sd1");
+                f2 = new File(dataDirectory, "BallSortStuff" + ".sd2");
+
+                // also make a comma-delimited leader that will begin each data line written to the sd2 file
+            } while (f1.exists() || f2.exists());
+
+            try
+            {
+                sd1 = new BufferedWriter(new FileWriter(f1));
+                sd2 = new BufferedWriter(new FileWriter(f2));
+
+                 //output header in sd2 file
+                sd2.write("Times and Successes: ");
+                sd2.flush();
+
+            } catch (IOException e)
+            {
+                Log.e(MYDEBUG, "ERROR OPENING DATA FILES! e=" + e.toString());
+
+            }
+        } else {
+            //request for the permission
+            Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+            Uri uri = Uri.fromParts("package","com.example.ballsort", null);
+            intent.setData(uri);
+            this.getContext().startActivity(intent);
         }
+
 
         /**
          * The following do-loop creates data files for output and a string sd2Leader to write to the sd2
@@ -250,31 +295,7 @@ public class BallPanel extends View {
          * The block code begins "B01" and is incremented on each loop iteration until an available
          * filename is found.  The goal, of course, is to ensure data files are not inadvertently overwritten.
          */
-        int blockNumber = 0;
-        do
-        {
-            ++blockNumber;
-            String blockCode = String.format(Locale.CANADA, "B%02d", blockNumber);
-            f1 = new File(dataDirectory, "BallSortStuff" + ".sd1");
-            f2 = new File(dataDirectory, "BallSortStuff" + ".sd2");
 
-            // also make a comma-delimited leader that will begin each data line written to the sd2 file
-        } while (f1.exists() || f2.exists());
-
-        try
-        {
-            sd1 = new BufferedWriter(new FileWriter(f1));
-            sd2 = new BufferedWriter(new FileWriter(f2));
-
-            // output header in sd2 file
-            sd2.write("Times and Successes: ");
-            sd2.flush();
-
-        } catch (IOException e)
-        {
-            Log.e(MYDEBUG, "ERROR OPENING DATA FILES! e=" + e.toString());
-
-        }
 
     }
     @RequiresApi(api = Build.VERSION_CODES.Q)
@@ -370,6 +391,7 @@ public class BallPanel extends View {
                         if(target.contains(xBall, yBall))
                         {
                             tapSuccesses += 1;
+                            tapSucs[tapTrialsDone] = 1;
                         }
                         float totaltime = endTime - startTime;
                         taptimes[tapTrialsDone] = totaltime/1000;
@@ -377,26 +399,74 @@ public class BallPanel extends View {
                         tapTrialsDone += 1;
                         if(tapTrialsDone == trials)
                         {
+
                             StringBuilder sd2Data = new StringBuilder(100);
+                            sd2Data.append("Tap trial results:  \n");
                             for(int o = 0; o < trials; o++)
                             {
                                 sd2Data.append(String.format(Locale.CANADA, "%.2f,", taptimes[o]));
                                 sd2Data.append(String.format(Locale.CANADA, "%.2f,", tapSucs[o]));
 
+
                             }
-                            try
+                            // sd1.write(sd1Stuff.toString(), 0, sd1Stuff.length());
+                            //sd1.flush();
+
+                            if(sd2 == null)
                             {
-                               // sd1.write(sd1Stuff.toString(), 0, sd1Stuff.length());
-                                //sd1.flush();
-                                sd2.write(sd2Data.toString(), 0, sd2Data.length());
-                                sd2.flush();
-                            } catch (IOException e)
-                            {
-                                Log.e("MYDEBUG", "ERROR WRITING TO DATA FILE!\n" + e);
+                                Log.i(MYDEBUG, "Holy fuck");
                             }
+                            if(f2 == null)
+                            {
+                                Log.i(MYDEBUG, "Jesus fucking Christ");
+                            }
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                                if (Environment.isExternalStorageManager()) {
+                                    File dataDirectory = new File(Environment.getExternalStorageDirectory() +
+                                            DATA_DIRECTORY);
+                                    Log.i(MYDEBUG, "HERE IS THE DATA DIRECTORY: "+ dataDirectory);
+                                    if (!dataDirectory.exists() && !dataDirectory.mkdirs())
+                                    {
+                                        Log.i(MYDEBUG, "does it exist? " + dataDirectory.exists() + "  can it be made? " + dataDirectory.mkdirs());
+                                        Log.e(MYDEBUG, "ERROR --> FAILED TO CREATE DIRECTORY: " + DATA_DIRECTORY);
+                                    }
+                                    int blockNumber = 0;
+                                    do
+                                    {
+                                        ++blockNumber;
+                                        String blockCode = String.format(Locale.CANADA, "B%02d", blockNumber);
+                                        f1 = new File(dataDirectory, "BallSortStuff" + ".sd1");
+                                        f2 = new File(dataDirectory, "BallSortStuff" + ".sd2");
+
+                                        // also make a comma-delimited leader that will begin each data line written to the sd2 file
+                                    } while (f1.exists() || f2.exists());
+
+                                    try
+                                    {
+
+                                        sd3 = new BufferedWriter(new FileWriter(f2));
+                                        sd3.write(sd2Data.toString(), 0, sd2Data.length());
+                                        Log.i(MYDEBUG, "It's been written");
+                                        sd3.flush();
+
+                                    } catch (IOException e)
+                                    {
+                                        Log.e(MYDEBUG, "ERROR OPENING DATA FILES! e=" + e.toString());
+
+                                    }
+                                } else {
+                                    //request for the permission
+                                    Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+                                    Uri uri = Uri.fromParts("package","com.example.ballsort", null);
+                                    intent.setData(uri);
+                                    this.getContext().startActivity(intent);
+                                }
+                            }
+
+
                             Intent i  = new Intent(this.getContext(), BallSortSetup.class);
                             this.getContext().startActivity(i);
-                            android.os.Process.killProcess(android.os.Process.myPid());
+                            Process.killProcess(Process.myPid());
                         }
                         Log.i(MYDEBUG, "taptrialsdone = " + tapTrialsDone + " tapsuccesses " + tapSuccesses);
                         ballTapped = false;

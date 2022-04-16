@@ -10,55 +10,63 @@
 9        android:targetSdkVersion="30" />
 9-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml
 10
-11    <application
-11-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:5:5-30:19
-12        android:allowBackup="true"
-12-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:6:9-35
-13        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
-13-->[androidx.core:core:1.0.1] C:\Users\Computer-chairmanMao\.gradle\caches\transforms-3\617b967992618d14d6be6001b1c1a438\transformed\core-1.0.1\AndroidManifest.xml:22:18-86
-14        android:debuggable="true"
-15        android:icon="@mipmap/ic_launcher"
-15-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:7:9-43
-16        android:label="@string/app_name"
-16-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:8:9-41
-17        android:roundIcon="@mipmap/ic_launcher_round"
-17-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:9:9-54
-18        android:supportsRtl="true"
-18-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:10:9-35
-19        android:testOnly="true"
-20        android:theme="@style/AppTheme" >
-20-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:11:9-40
-21        <activity android:name="com.example.ballsort.BallSortSetup" >
-21-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:12:9-18:20
-21-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:12:19-48
-22            <intent-filter>
-22-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:13:13-17:29
-23                <action android:name="android.intent.action.MAIN" />
-23-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:14:17-69
-23-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:14:25-66
-24
-25                <category android:name="android.intent.category.LAUNCHER" />
-25-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:16:17-77
-25-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:16:27-74
-26            </intent-filter>
-27        </activity>
-28        <activity
-28-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:19:9-28:20
-29            android:name="com.example.ballsort.BallSortActivity"
-29-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:19:19-51
-30            android:screenOrientation="landscape" >
-30-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:20:13-50
-31            <intent-filter>
-31-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:13:13-17:29
-32                <action android:name="android.intent.action.MAIN" />
-32-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:14:17-69
-32-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:14:25-66
-33
-34                <category android:name="android.intent.category.LAUNCHER" />
-34-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:16:17-77
-34-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:16:27-74
-35            </intent-filter>
-36        </activity>
-37    </application>
-38
-39</manifest>
+11    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+11-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:4:5-82
+11-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:4:22-79
+12    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+12-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:5:5-74
+12-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:5:22-72
+13    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+13-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:6:5-80
+13-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:6:22-78
+14    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+14-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:7:5-79
+14-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:7:22-77
+15    <uses-permission android:name="android.permission.VIBRATE" />
+15-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:8:5-65
+15-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:8:22-63
+16
+17    <application
+17-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:9:5-29:19
+18        android:allowBackup="true"
+18-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:11:9-35
+19        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+19-->[androidx.core:core:1.0.1] C:\Users\Computer-chairmanMao\.gradle\caches\transforms-3\617b967992618d14d6be6001b1c1a438\transformed\core-1.0.1\AndroidManifest.xml:22:18-86
+20        android:debuggable="true"
+21        android:icon="@mipmap/ic_launcher"
+21-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:12:9-43
+22        android:label="@string/app_name"
+22-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:13:9-41
+23        android:requestLegacyExternalStorage="true"
+23-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:10:9-52
+24        android:roundIcon="@mipmap/ic_launcher_round"
+24-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:14:9-54
+25        android:supportsRtl="true"
+25-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:15:9-35
+26        android:testOnly="true"
+27        android:theme="@style/AppTheme" >
+27-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:16:9-40
+28        <activity android:name="com.example.ballsort.BallSortSetup" >
+28-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:17:9-23:20
+28-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:17:19-48
+29            <intent-filter>
+29-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:18:13-22:29
+30                <action android:name="android.intent.action.MAIN" />
+30-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:19:17-69
+30-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:19:25-66
+31
+32                <category android:name="android.intent.category.LAUNCHER" />
+32-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:21:17-77
+32-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:21:27-74
+33            </intent-filter>
+34        </activity>
+35        <activity
+35-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:24:9-27:20
+36            android:name="com.example.ballsort.BallSortActivity"
+36-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:24:19-51
+37            android:screenOrientation="landscape" >
+37-->C:\Users\Computer-chairmanMao\AndroidStudioProjects\BallSort\app\src\main\AndroidManifest.xml:25:13-50
+38        </activity>
+39    </application>
+40
+41</manifest>
