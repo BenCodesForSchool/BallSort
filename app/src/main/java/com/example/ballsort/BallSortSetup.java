@@ -15,7 +15,7 @@ import android.os.Bundle;
 
 public class BallSortSetup extends Activity {
 
-    final static String[] NUM_OF_TRIALS = {"5", "10", "15"};
+    final static String[] NUM_OF_TRIALS = {"25", "50", "75"};
     final static String[] GESTURE_TYPE = {"Fling", "Tap"};
     Spinner spinNumTrials, spinGesType;
 
@@ -48,12 +48,12 @@ public class BallSortSetup extends Activity {
         String gType = (String) spinGesType.getSelectedItem();
 
         int noTs;
-        if(numtrials.equals("5"))
-            noTs = 5;
-        else if(numtrials.equals("10"))
-            noTs = 10;
+        if(numtrials.equals("25"))
+            noTs = 25;
+        else if(numtrials.equals("50"))
+            noTs = 50;
         else
-            noTs = 15;
+            noTs = 75;
 
 
         // bundle up parameters to pass on to activity

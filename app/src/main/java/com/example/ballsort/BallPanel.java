@@ -1017,7 +1017,7 @@ public class BallPanel extends View {
     {
         noTs = numTs;
 
-        trials = 5 * noTs;
+        trials = noTs;
         taptimes = new float[trials];
         flingtimes = new float[trials];
         tapSucs = new float[trials];
