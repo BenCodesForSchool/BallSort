@@ -38,45 +38,23 @@ import java.util.Locale;
 public class BallPanel extends View {
 
     final static int TIMER_DELAY = 5;
-    final static float DEGREES_TO_RADIANS = 0.0174532925f;
     private final static String DATA_DIRECTORY = "/BallSortData/";
-    // the ball diameter will be min(width, height) / this_value
-    final static float BALL_DIAMETER_ADJUST_FACTOR = 30;
-    final static String MYDEBUG = "MYDEBUG"; // for Log.i messages
-    final static int DEFAULT_LABEL_TEXT_SIZE = 20; // tweak as necessary
-    final static int DEFAULT_STATS_TEXT_SIZE = 10;
-    final static int DEFAULT_GAP = 7; // between lines of text
-    final static int DEFAULT_OFFSET = 10; // from bottom of display
-    private BufferedWriter sd1, sd2, sd3, sd4;
-
-    final static int MODE_NONE = 0;
-    final static int PATH_TYPE_SQUARE = 1;
-    final static int PATH_TYPE_CIRCLE = 2;
-
-    final static float PATH_WIDTH_NARROW = 2f; // ... x ball diameter
-    final static float PATH_WIDTH_MEDIUM = 4f; // ... x ball diameter
-    final static float PATH_WIDTH_WIDE = 8f; // ... x ball diameter
-
-    long startTime, endTime;
-    float radiusOuter, radiusInner;
-
+    final static String MYDEBUG = "MYDEBUG"; // for //Log.i messages
+    private BufferedWriter sd3, sd4;
+        long startTime, endTime;
     Bitmap ball, blueBallBitmap, redBallBitmap, greenBallBitmap, magentaBallBitmap, orangeBallBitmap, turquoiseBallBitmap, violetBallBitmap, yellowBallBitmap;
     String ballString;
     int ballDiameter;
     RectF[] squares = new RectF[9];
+    float pixelDensity, veloX, veloY;
 
-
-    float dT; // time since last sensor event (seconds)
-
-    float width, height, pixelDensity, veloX, veloY;
-    int labelTextSize, statsTextSize, gap, offset;
     int trials;
     float[] taptimes;
     float[] flingtimes;
     float[] tapSucs, flingSucs;
     int tapTrialsDone, flingTrialsDone, tapSuccesses, flingSuccesses;
     boolean flinging;
-    boolean ballFlings, ballFlag;
+    boolean ballFlings;
 
 
     RectF innerRectangle, outerRectangle, innerShadowRectangle, outerShadowRectangle, ballNow, upLeft, upMid, upRight, midLeft, midRight, bLeft, bMid, bRight, whiteRect, target;
@@ -89,28 +67,18 @@ public class BallPanel extends View {
     float xBall, yBall, whiteLeft, whiteRight, whiteTop, whiteBottom; // top-left of the ball (for painting)
     float xBallCenter, yBallCenter; // center of the ball
     private GestureDetector gestureDetector;
-    final static int MIDDLE_SQUARE_LENGTH = 0;
-    final static int SQUARE_LENGTH = 0;
     private float flingVelocity;
     private float flingAngle;
     CountDownTimer flingTimer;
     private File f2;
-
-
-
-
     // parameters from Setup dialog
     String gType;
     int noTs;
 
-    float dBall; // the amount to move the ball (in pixels): dBall = dT * velocity
     float xCenter, yCenter; // the center of the screen
     long now, lastT;
     Paint bluePaint, greenPaint, orangePaint, magentaPaint, yellowPaint, violetPaint, turquoisePaint,  redPaint, whitePaint, targetPaint;
     Paint[] masterPaints = new Paint[9];
-
-
-    float[] updateY;
 
     @RequiresApi(api = Build.VERSION_CODES.R)
     public BallPanel(Context contextArg)
@@ -182,10 +150,6 @@ public class BallPanel extends View {
         masterPaints[7] = turquoisePaint;
         masterPaints[8] = whitePaint;
 
-
-
-
-
         // NOTE: we'll create the actual bitmap in onWindowFocusChanged
         blueBallBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.blueball);
         greenBallBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.greenball);
@@ -199,7 +163,7 @@ public class BallPanel extends View {
 
         lastT = System.nanoTime();
         this.setBackgroundColor(Color.LTGRAY);
-        Log.i(MYDEBUG, String.valueOf(this.getBackground()));
+       // //Log.i(MYDEBUG, String.valueOf(this.getBackground()));
         touchFlag = false;
         outerRectangle = new RectF();
         innerRectangle = new RectF();
@@ -223,15 +187,12 @@ public class BallPanel extends View {
 
         xCenter = this.getWidth() / 2f;
         yCenter = this.getHeight() / 2f;
-
-        int xcoord = ((int) xCenter);
-        int ycoord = ((int) yCenter);
         gestureDetector = new GestureDetector(c, new MyGestureListener());
         flingTimer = new CountDownTimer(TIMER_DELAY, TIMER_DELAY)
         {
             public void onTick(long millisUntilFinished)
             {
-                Log.i(MYDEBUG, "ticking");
+                ////Log.i(MYDEBUG, "ticking");
             }
 
             @RequiresApi(api = Build.VERSION_CODES.Q)
@@ -245,14 +206,14 @@ public class BallPanel extends View {
 
 
         String parent = String.valueOf(Environment.getExternalStorageDirectory());
-        Log.i(MYDEBUG ,"HERE IT IS BUDDY " + parent);
+        ////Log.i(MYDEBUG ,"HERE IT IS BUDDY " + parent);
         if (Environment.isExternalStorageManager()) {
             File dataDirectory = new File(Environment.getExternalStorageDirectory() +
                     DATA_DIRECTORY);
-            Log.i(MYDEBUG, "HERE IS THE DATA DIRECTORY PRE: "+ dataDirectory);
+            ////Log.i(MYDEBUG, "HERE IS THE DATA DIRECTORY PRE: "+ dataDirectory);
             if (!dataDirectory.exists() && !dataDirectory.mkdirs())
             {
-                Log.i(MYDEBUG, "does it exist? " + dataDirectory.exists() + "  can it be made? " + dataDirectory.mkdirs());
+                ////Log.i(MYDEBUG, "does it exist? " + dataDirectory.exists() + "  can it be made? " + dataDirectory.mkdirs());
                 Log.e(MYDEBUG, "ERROR --> FAILED TO CREATE DIRECTORY: " + DATA_DIRECTORY);
             }
             if(f2 == null)
@@ -269,7 +230,7 @@ public class BallPanel extends View {
             Uri uri = Uri.fromParts("package","com.example.ballsort", null);
             intent.setData(uri);
             this.getContext().startActivity(intent);
-            Log.i(MYDEBUG, "Reached the end of initialize");
+           // //Log.i(MYDEBUG, "Reached the end of initialize");
         }
 
 
@@ -342,7 +303,6 @@ public class BallPanel extends View {
                     break;
                 if(flinging)
                 {
-                    Log.i(MYDEBUG, "It's moving");
                     moving = true;
                     if (activePointerId != INVALID_POINTER_ID) {
                         // find the index of the active pointer and fetch its position
@@ -381,7 +341,7 @@ public class BallPanel extends View {
                         }
                         float totaltime = endTime - startTime;
                         taptimes[tapTrialsDone] = totaltime/1000;
-                        Log.i(MYDEBUG, "This much time: " + taptimes[tapTrialsDone]);
+                        ////Log.i(MYDEBUG, "This much time: " + taptimes[tapTrialsDone]);
                         tapTrialsDone += 1;
                         if(tapTrialsDone == trials)
                         {
@@ -398,23 +358,18 @@ public class BallPanel extends View {
                             sd2Data.append("\n");
                             // sd1.write(sd1Stuff.toString(), 0, sd1Stuff.length());
                             //sd1.flush();
-
-                            if(sd2 == null)
-                            {
-                                Log.i(MYDEBUG, "Holy fuck");
-                            }
                             if(f2 == null)
                             {
-                                Log.i(MYDEBUG, "Jesus fucking Christ");
+                                ////Log.i(MYDEBUG, "Jesus fucking Christ");
                             }
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                                 if (Environment.isExternalStorageManager()) {
                                     File dataDirectory = new File(Environment.getExternalStorageDirectory() +
                                             DATA_DIRECTORY);
-                                    Log.i(MYDEBUG, "HERE IS THE DATA DIRECTORY TAP: "+ dataDirectory);
+                                    //Log.i(MYDEBUG, "HERE IS THE DATA DIRECTORY TAP: "+ dataDirectory);
                                     if (!dataDirectory.exists() && !dataDirectory.mkdirs())
                                     {
-                                        Log.i(MYDEBUG, "does it exist? " + dataDirectory.exists() + "  can it be made? " + dataDirectory.mkdirs());
+                                        //Log.i(MYDEBUG, "does it exist? " + dataDirectory.exists() + "  can it be made? " + dataDirectory.mkdirs());
                                         Log.e(MYDEBUG, "ERROR --> FAILED TO CREATE DIRECTORY: " + DATA_DIRECTORY);
                                     }
                                     if(f2 == null)
@@ -433,7 +388,7 @@ public class BallPanel extends View {
 
                                         sd3 = new BufferedWriter(new FileWriter(f2, true));
                                         sd3.write(sd2Data.toString(), 0, sd2Data.length());
-                                        Log.i(MYDEBUG, "It's been written");
+                                        //Log.i(MYDEBUG, "It's been written");
                                         sd3.close();
 
                                     } catch (IOException e)
@@ -455,7 +410,7 @@ public class BallPanel extends View {
                             this.getContext().startActivity(i);
                             android.os.Process.killProcess(android.os.Process.myPid());
                         }
-                        Log.i(MYDEBUG, "taptrialsdone = " + tapTrialsDone + " tapsuccesses " + tapSuccesses);
+                        //Log.i(MYDEBUG, "taptrialsdone = " + tapTrialsDone + " tapsuccesses " + tapSuccesses);
                         ballTapped = false;
                         onWindowFocusChanged(true);
 
@@ -488,11 +443,11 @@ public class BallPanel extends View {
         if(xBall <= 0.00 || xBall + ballDiameter >= xCenter * 2)
         {
             //if(0)
-            Log.i(MYDEBUG, "IT'S OFF THE SIDE");
+            //Log.i(MYDEBUG, "IT'S OFF THE SIDE");
             veloX *= -1;
             flingVelocity = (float)Math.sqrt(veloX * veloX + veloY * veloY);
             flingAngle = (float)Math.atan2(veloY, veloX);
-            Log.i(MYDEBUG, "velox = " + veloX + " veloy =" + veloY);
+            //Log.i(MYDEBUG, "velox = " + veloX + " veloy =" + veloY);
             DIVISOR = 2.2f;
             //dx = (float)Math.cos(flingAngle) * (flingVelocity / FACTOR);
             //dy = (float)Math.sin(flingAngle) * (flingVelocity / FACTOR);
@@ -514,9 +469,9 @@ public class BallPanel extends View {
         }
         // fiddle with these constants, as necessary, to get good fling motion
 
-        Log.i(MYDEBUG, "xBall = "+ xBall);
+        //Log.i(MYDEBUG, "xBall = "+ xBall);
 
-        Log.i(MYDEBUG, "velox = " + veloX + " veloy =" + veloY);
+        //Log.i(MYDEBUG, "velox = " + veloX + " veloy =" + veloY);
         float dx = (float)Math.cos(flingAngle) * (flingVelocity / FACTOR);
         float dy = (float)Math.sin(flingAngle) * (flingVelocity / FACTOR);
 
@@ -532,11 +487,11 @@ public class BallPanel extends View {
        /* if(xBall <= 0.00 || xBall + ballDiameter >= xCenter * 2)
         {
             //if(0)
-            Log.i(MYDEBUG, "IT'S OFF THE SIDE");
+            //Log.i(MYDEBUG, "IT'S OFF THE SIDE");
             veloX *= -1;
             flingVelocity = (float)Math.sqrt(veloX * veloX + veloY * veloY);
             flingAngle = (float)Math.atan2(veloY, veloX);
-            Log.i(MYDEBUG, "velox = " + veloX + " veloy =" + veloY);
+            //Log.i(MYDEBUG, "velox = " + veloX + " veloy =" + veloY);
             dx = (float)Math.cos(flingAngle) * (flingVelocity / FACTOR);
             dy = (float)Math.sin(flingAngle) * (flingVelocity / FACTOR);
             dx *= pixelDensity;
@@ -554,22 +509,22 @@ public class BallPanel extends View {
         }*/
         flingVelocity /= DIVISOR;
         final float dz = (float)Math.sqrt(dx * dx + dy * dy);
-        Log.i(MYDEBUG, "dx equals" + dx + " dy equals" + dy);
+        //Log.i(MYDEBUG, "dx equals" + dx + " dy equals" + dy);
         if (dz < THRESHOLD)
         {
-            Log.i(MYDEBUG, "Fling ending");
+            //Log.i(MYDEBUG, "Fling ending");
 
             flingTimer.cancel();
             ballFlings = false;
             moving = false;
 
-            //Log.i(MYDEBUG, "target.left = " + target.left + " target.right = " + target.right + " xBall = " + xBall + " yBall = " + yBall + " ballDiameter = " + ballDiameter + " target.top = " + target.top + " target.bottom = " + target.bottom);
+            ////Log.i(MYDEBUG, "target.left = " + target.left + " target.right = " + target.right + " xBall = " + xBall + " yBall = " + yBall + " ballDiameter = " + ballDiameter + " target.top = " + target.top + " target.bottom = " + target.bottom);
             if(target.left < xBall && target.right > xBall + ballDiameter && target.top < yBall - ballDiameter && target.bottom > yBall)
             {
-                Log.i(MYDEBUG, "fling success!");
+                //Log.i(MYDEBUG, "fling success!");
                 flingSucs[flingTrialsDone] = 1;
                 flingSuccesses += 1;
-                Log.i(MYDEBUG, "flingSuccesses = " + flingSuccesses);
+                //Log.i(MYDEBUG, "flingSuccesses = " + flingSuccesses);
             }
             flingTrialsDone += 1;
             if(flingTrialsDone == trials)
@@ -585,23 +540,18 @@ public class BallPanel extends View {
                 sd2Data.append("\n");
                 // sd1.write(sd1Stuff.toString(), 0, sd1Stuff.length());
                 //sd1.flush();
-
-                if(sd2 == null)
-                {
-                    Log.i(MYDEBUG, "Holy fuck");
-                }
                 if(f2 == null)
                 {
-                    Log.i(MYDEBUG, "Jesus fucking Christ");
+                    //Log.i(MYDEBUG, "Jesus fucking Christ");
                 }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                     if (Environment.isExternalStorageManager()) {
                         File dataDirectory = new File(Environment.getExternalStorageDirectory() +
                                 DATA_DIRECTORY);
-                        Log.i(MYDEBUG, "HERE IS THE DATA DIRECTORY FLING: "+ dataDirectory);
+                        //Log.i(MYDEBUG, "HERE IS THE DATA DIRECTORY FLING: "+ dataDirectory);
                         if (!dataDirectory.exists() && !dataDirectory.mkdirs())
                         {
-                            Log.i(MYDEBUG, "does it exist? " + dataDirectory.exists() + "  can it be made? " + dataDirectory.mkdirs());
+                            //Log.i(MYDEBUG, "does it exist? " + dataDirectory.exists() + "  can it be made? " + dataDirectory.mkdirs());
                             Log.e(MYDEBUG, "ERROR --> FAILED TO CREATE DIRECTORY: " + DATA_DIRECTORY);
                         }
                         if(f2 == null)
@@ -618,7 +568,7 @@ public class BallPanel extends View {
 
                             sd4 = new BufferedWriter(new FileWriter(f2, true));
                             sd4.write(sd2Data.toString(), 0, sd2Data.length());
-                            Log.i(MYDEBUG, "It's been written");
+                            //Log.i(MYDEBUG, "It's been written");
                             sd4.flush();
                             sd4.close();
 
@@ -641,11 +591,11 @@ public class BallPanel extends View {
                 android.os.Process.killProcess(android.os.Process.myPid());
             }
             onWindowFocusChanged(true);
-            //Log.i(MYDEBUG, "But is it getting here first?");
+            ////Log.i(MYDEBUG, "But is it getting here first?");
         }
         else
         {
-            //Log.i(MYDEBUG, "Fling beginning");
+            ////Log.i(MYDEBUG, "Fling beginning");
             flingTimer.start();
         }
 
@@ -677,10 +627,10 @@ public class BallPanel extends View {
             endTime = System.currentTimeMillis();
             float totalTime = endTime - startTime;
             flingtimes[flingTrialsDone] = totalTime/1000;
-            Log.i(MYDEBUG, "This much time: " + flingtimes[flingTrialsDone] + " this is how many trials: " + flingTrialsDone + " This is how big " + flingtimes.length);
+            //Log.i(MYDEBUG, "This much time: " + flingtimes[flingTrialsDone] + " this is how many trials: " + flingTrialsDone + " This is how big " + flingtimes.length);
             if(flinging)
             {
-                Log.i(MYDEBUG, "Flinging");
+                ////Log.i(MYDEBUG, "Flinging");
                 flingVelocity = (float)Math.sqrt(velocityX * velocityX + velocityY * velocityY);
                 flingAngle = (float)Math.atan2(velocityY, velocityX);
                 veloX = velocityX;
@@ -700,7 +650,7 @@ public class BallPanel extends View {
     @RequiresApi(api = Build.VERSION_CODES.Q)
     public void onWindowFocusChanged(boolean hasFocus)
     {
-        Log.i(MYDEBUG, "NGL we're changing window focus");
+        ////Log.i(MYDEBUG, "NGL we're changing window focus");
         if (!hasFocus)
             return;
         xCenter = this.getWidth() / 2f;
@@ -778,7 +728,7 @@ public class BallPanel extends View {
         if(oWFC == true)
         {
             ballDiameter = (int) (xCenter/ 15);
-            Log.i(MYDEBUG, String.valueOf(xCenter));
+            //Log.i(MYDEBUG, String.valueOf(xCenter));
             List<Bitmap> ballList = new ArrayList<>();
             ballList.add(blueBallBitmap);
             ballList.add(greenBallBitmap);
@@ -837,7 +787,7 @@ public class BallPanel extends View {
 
         if(ballTapped == true)
         {
-            Log.i(MYDEBUG, "Hey we're getting to this place");
+            ////Log.i(MYDEBUG, "Hey we're getting to this place");
             for (int j = 0; j < 8; j++)
             {
                 canvas.drawRect(squares[j], masterPaints[j]);
@@ -853,7 +803,7 @@ public class BallPanel extends View {
 
         if(moving == true || ballFlings == true)
         {
-            Log.i(MYDEBUG, "It's actually getting here");
+            ////Log.i(MYDEBUG, "It's actually getting here");
             for (int j = 0; j < 8; j++)
             {
                 canvas.drawRect(squares[j], masterPaints[j]);
@@ -870,8 +820,8 @@ public class BallPanel extends View {
         //canvas.drawText("Random text", 100, -29, greenPaint);
         String cheight = String.valueOf(canvas.getHeight());
         String cwidth = String.valueOf(canvas.getWidth());
-        Log.i(MYDEBUG, cheight);
-        Log.i(MYDEBUG, cwidth);
+        //Log.i(MYDEBUG, cheight);
+        //Log.i(MYDEBUG, cwidth);
         List<Paint> paintList = new ArrayList<>();
         paintList.add(bluePaint);
         paintList.add(greenPaint);
@@ -1007,7 +957,7 @@ public class BallPanel extends View {
             target.bottom = r.bottom;
             targetPaint = paint;
             canvas.drawRect(target, paint);
-            Log.i(MYDEBUG, "Target. left = " + target.left + " target.right = " + target.right);
+            ////Log.i(MYDEBUG, "Target. left = " + target.left + " target.right = " + target.right);
             return true;
         }
         return false;
@@ -1024,12 +974,12 @@ public class BallPanel extends View {
         flingSucs = new float[trials];
 
         gType = geeType;
-        Log.i(MYDEBUG, "Here it is bruh" +  gType);
+        ////Log.i(MYDEBUG, "Here it is bruh" +  gType);
         if(gType.equals("Fling"))
         {
             flinging = true;
         }
-        Log.i(MYDEBUG, "What is flinging? " + flinging);
+        ////Log.i(MYDEBUG, "What is flinging? " + flinging);
 
     }
 }

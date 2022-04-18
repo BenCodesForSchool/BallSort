@@ -27,7 +27,7 @@ public class BallSortActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Log.i(MYDEBUG, "Got here! (BallSortActivity - onCreate)");
+        //Log.i(MYDEBUG, "Got here! (BallSortActivity - onCreate)");
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);  // no title bar
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
